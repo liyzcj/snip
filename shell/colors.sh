@@ -65,9 +65,9 @@ for clbg in {40..47} {100..107} 49; do
     done
 done
 
-############
+#############
 # 256 色编码 #
-############
+#############
 
 # 256 色编码包含 256 个前景色和 256 个背景色
 
@@ -85,3 +85,23 @@ for fgbg in 38 48; do         # Foreground / Background
     done
     echo # New line
 done
+
+##############
+# 常用日志方法 #
+##############
+
+info() {
+    printf "\e[32m[INFO]\e[0m %s\n" $1
+}
+
+warn() {
+    printf "\e[33m[WARN]\e[0m %s\n" $1
+}
+
+error() {
+    printf "\e[31m[ERROR]\e[0m %s\n" $1
+}
+
+debug() {
+    printf "\e[34m[DEBUG]\e[0m %s\n" $1
+}
