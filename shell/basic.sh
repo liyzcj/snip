@@ -60,6 +60,15 @@ shopt -u globstar # v4.0+
 
 # ----------------------------------- 变量操作 ----------------------------------- #
 
+# 数组
+array=(a b c)            # 赋值
+array[3]=d               # 索引赋值
+echo ${array[0]}         # 索引读取
+for i in ${array[@]}; do # 循环数组
+    echo $i
+done
+
+# 通过索引访问数组
 echo ${parameter:-word}     # 如果 parameter不存在或为 Null，则采用 word
 echo ${parameter:=word}     # 如果 parameter不存在或为 Null，则为 parameter赋值 word并返回。
 echo ${parameter:?word}     # 如果 parameter不存在或为 Null，则将 word 打印到标准输出，并退出脚本
@@ -111,14 +120,6 @@ case $word in
 2) echo word1 ;;
 *) echo word1 ;;
 esac
-
-# Select 语句
-# 打印列表的每一项和编号，选择编号后，对应的编号会复制给 $REPLY
-
-select fname in *; do
-    echo you picked $fname \($REPLY\)
-    break
-done
 
 # ----------------------------------- 循环语句 ----------------------------------- #
 
@@ -350,6 +351,50 @@ command | command # 将一个 command 的标准输入作为另一个的标准输
 /dev/random            # 随机生成器，可能会阻塞
 /dev/urandom           # 非阻塞的随机生成器
 
+# ---------------------------------- 用户输入 ---------------------------------- #
+
+# Select 语句
+# 打印列表的每一项和编号，选择编号后，对应的编号会复制给 $REPLY
+
+select fname in *; do
+    echo you picked $fname \($REPLY\)
+    if [[ $fname != "" ]]; then
+        break # 选择错误的时候 break，不然会无限循环
+    fi
+done
+
+# select 配合 case 使用
+select name in dog cat; do
+    echo you picked $name \($REPLY\)
+    case $name in
+    dog) echo "a dog" ;;
+    cat) echo "a cat" ;;
+    *) echo "failed" ;;
+    esac
+    break
+done
+
+# ---------------------------------------------------------------------------- #
+
+# read 命令
+read var1 var2 # 读取到 var 变量，多个由空格分割，多余的存到最后一个变量
+read           # 读到 REPLY 变量
+
+# 选项
+read -d ":" var      # 输入结束的符号，默认为 Enter
+read -n 2 var        # 接受字符的个数，不等待结束符
+read -p "name: " var # 输入提示
+read -t 3 var        # 限制等待时间
+read -a arrayname    # 将输入存入数组
+read -s pass         # 输入时不回显
+
+# 实例：输入 yes no
+read -p "Install packages? [y/n]:" res
+if [[ "$res" =~ ^([yY][eE][sS]|[yY])+$ ]] || [ ! $res ]; then
+    # 确认后的逻辑
+    echo ok
+fi
+
 # ------------------------------------ 函数 ------------------------------------ #
 
 # 函数有三种形式
@@ -394,3 +439,8 @@ a=$((4 + 2))
 let "a = 1 + 2"
 let "a = $a + 2"
 let "a++"
+
+# ----------------------------------- shopt ---------------------------------- #
+# TODO
+# ------------------------------------ set ----------------------------------- #
+# TODO
