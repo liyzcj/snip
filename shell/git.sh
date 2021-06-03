@@ -8,6 +8,7 @@
 
 # Checkout
 git checkout -- /path/to/file # 重置单个文件到某个记录
+git checkout .                # 重置到当前分支的 Commit
 
 # =================================== diff =================================== #
 
@@ -27,6 +28,38 @@ git merge branch
 git config
 --list   # 列出当前配置
 --global # 全局配置
+
+# ==================================== log =================================== #
+
+# 列出历史 Commit 记录
+# git log [<options>] [<revision range>] [[--] <path>...]
+#
+# * <revision range> 可以用来指定 Commit 的范围
+# * [--] <path>... 可以用来指定一个或多个文件，仅仅涉及到这些文件改动的 Commit 才会显示。
+
+# <options>
+--stat    # 显示改动的文件及状态，比如文件变动的行数等
+--graph   # 以图的方式显示
+--oneline # 单行显示
+-N        # 限制显示 N 个结果
+
+# ############################################################################ #
+#                                 Git Advanced                                 #
+# ############################################################################ #
+
+# ================================== reflog ================================== #
+
+# reflog 记录了 Git 的操作日志，包含多个子命令
+# 例如执行了某个命令强行修改了 Git 的历史，如果不删除，历史还是可以通过 reflog 找回来。
+# PS: reflog 只在本地仓库存在！！！
+
+git reflog                   # 同 git reflog show
+git reflog show              # 显示操作日志 等价与 git log -g --oneline
+git reflog exists '<ref>'    # 判断某个 ref 是否存在，存在返回 0，不存在返回 1
+git reflog delete 'HEAD@{N}' # 删除指定的 ref
+git reflog expire            # 删除过期的 reflog
+
+git reflog expire --expire-unreachable=now --all # 删除当前不可达的所有 reflog[慎用]
 
 # ############################################################################ #
 #                                 Git Cookbook                                 #
@@ -76,7 +109,7 @@ git count-objects -vH
 # 查看所有引用了某个对象的提交
 git whatchanged --all --find-object=[blob-has]
 
+# 如果上面的方法都不生效，可以采用这种方式移除所有不可达的引用
+# NOTE: This will remove many objects you might want to keep: Stashes; Old history not in any current branches; etc.
 git reflog expire --expire-unreachable=now --all
 git gc --prune=now
-
-# TODO https://stackoverflow.com/questions/1904860/how-to-remove-unreferenced-blobs-from-my-git-repo
