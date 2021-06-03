@@ -4,6 +4,12 @@
 #                                  Git Command                                 #
 # ############################################################################ #
 
+# ================================== commit ================================== #
+
+git commit -m "msg"  # 提交
+git commit -am "msg" # 添加已修改的文件并提交
+git commit --amend   # 修改上一个节点
+
 # ================================= checkout ================================= #
 
 # Checkout
@@ -23,11 +29,95 @@ git merge branch
 --no-ff   # 总是创建一个新的 Commit
 --ff-only # 当无法前进合并时，直接合并失败
 
+# ================================== rebase ================================== #
+
+git rebase -i 'ref' # 交互式 rebase
+
+# =================================== reset ================================== #
+
+# 重置 HEAD 到指定的状态
+git reset --hard # 重置到当前分支，重置磁盘文件
+git reset --soft # 重置到当前分支，重置暂存区
+
+# ================================== revert ================================== #
+
+git revert '<commit_id>' # 增加一个新的 Commit，来回滚到某个 Commit
+
+# ==================================== tag =================================== #
+
+git tag light                   # unannotated tag
+git tag -a -m "Message" annot   # annotated tag
+git tag                         # 列出所有标签
+git describe                    # 列出 annotated 标签
+git push --follow-tags          # 推送 annotated tag 到远程仓库
+git tag -d footag               # 删除本地 Tag
+git push origin :footag         # 删除远程 Tag
+git push --delete origin footag # 删除远程 Tag
+
+# =================================== clean ================================== #
+
+git clean         # 清除当前工作空间中未跟踪的文件，默认只清除当前路径
+-d                # 递归清楚搜索路径
+-f, --force       # 强制删除
+-i, --interactive # 交互模式删除
+-n, --dry-run     # 模拟执行
+-X                # 仅仅删除被 Git 忽略的文件，不会删除其他文件。
+git clean -Xdf    # 删除所有 .gitignore 忽略的文件。
+
+# =================================== stash ================================== #
+
+git stash                        # 暂存变更
+git stash pop                    # 弹出上个存储的变更
+git stash list                   # 查看所有暂存
+git stash clear                  # 清空缓存
+git stash drop [-q | --quiet] [] # 删除某个暂存
+git stash apply                  # 使用某个暂存，但不会删除
+git stash push -p -m "message"   # 暂存部分文件
+
+# ================================== branch ================================== #
+
+git branch -a                       # 查看所有分支，包含远程
+git branch                          # 查看本地分支
+git branch -d branch_name           # 本地分支
+git branch -D branch_name           # 强行删除本地分支
+git branch -r -d origin/branch_name # 删除本地远程分支
+git push origin :branch_name        # 删除远程分支
+git branch branch_name              # 创建方法一，创建后不会自动切换
+git checkout -b branch_name         # 创建方法二，创建后会自动切换到分支
+git branch -m '<old>' '<new>'       # 移动分支 old 为 new
+git branch -m '<new>'               # 将当前分支移动为 New
+git branch -M '<old>' '<new>'       # 等价与 git branch --move --force
+
+# 删除已经 Merge 的所有分支
+git branch --merged master | grep -v '^\*\|  master' | xargs -n 1 git branch -d
+
+# ================================= submodule ================================ #
+
+git submodule add --name 'module_name' '<REMOTE_URL>' '<LOCAL_PATH>' # 增加
+
+# 删除
+# 1. deinit
+git submodule deinit '<module path>'
+# 2. 从 .gitmodules 文件删除对应 submodule, 并 stage .gitmodules 文件。
+# 3. 从 .git/modules/ 文件夹中删除对应module：
+rm -rf .git/modules/module_name
+# 4. 提交 Commmit
+
 # ================================== config ================================== #
 
 git config
 --list   # 列出当前配置
 --global # 全局配置
+--edit   # 编辑配置文件
+--unset  # 取消配置
+
+user.name            # 用户名
+user.email           # 用户邮箱
+http.proxy           # 代理
+push.followTags true # 自动推送 annotated 标签
+
+url."xxx".insteadOf "xxx"                     # 替换 URL
+url."https://github".insteadOf "git://github" # 总是使用 https 进行访问
 
 # ==================================== log =================================== #
 
@@ -42,6 +132,13 @@ git config
 --graph   # 以图的方式显示
 --oneline # 单行显示
 -N        # 限制显示 N 个结果
+
+# ############################################################################ #
+#                                  Git Remote                                  #
+# ############################################################################ #
+
+git remote add '[<options>]' '<name>' '<url>' # 增加远程仓库
+git remote -v                                 # 查看远程仓库
 
 # ############################################################################ #
 #                                 Git Advanced                                 #
@@ -60,6 +157,39 @@ git reflog delete 'HEAD@{N}' # 删除指定的 ref
 git reflog expire            # 删除过期的 reflog
 
 git reflog expire --expire-unreachable=now --all # 删除当前不可达的所有 reflog[慎用]
+
+# =================================== prune ================================== #
+
+# 删除不再引用的对象
+
+git prune      # 删除不再引用的松散对象
+--expire=now   # 指定过期时间
+--dry-run      # 模拟运行
+-- '<head>...' # 指定保留可达的引用
+
+git prune-packed # 删除不再引用的打包对象
+--dry-run        # 模拟运行
+
+# =================================== fsck =================================== #
+
+git fsck       # 检查对象数据库中对象的连接性以及有效性
+--dangling     # 默认，打印 dangling 的对象
+--full         # 检查所有对象
+--unreachable  # 打印不可达对象
+--name-objects # 显示对象是如何被引用的
+--no-reflogs   # 不统计 reflog 对对象的引用
+
+# ================================= cat-file ================================= #
+
+git cat-file # 打印对象的内容
+-p           # 格式化对象的内容
+-s           # 打印对象的大小
+-t           # 打印对象的类型
+
+# ================================== others ================================== #
+
+git count-objects -Hv # 统计对象数据库中的信息
+git rev-list --all    # 按时间逆序列出 Commit 对象
 
 # ############################################################################ #
 #                                 Git Cookbook                                 #
