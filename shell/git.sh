@@ -26,8 +26,9 @@ git diff [options] [commits] -- [file]
 
 git merge branch
 --ff      # 默认，当可以前进合并时不创建新的 Commit。
---no-ff   # 总是创建一个新的 Commit
+--no-ff   # 总是创建一个新的 Commit，它有两个 Parent，一个当前分支，一个合并分支。
 --ff-only # 当无法前进合并时，直接合并失败
+--squash  # 类似与 --no-ff，不过合并分支完全抛弃，不作为 Commit 的父节点。
 
 # ================================== rebase ================================== #
 
@@ -87,6 +88,7 @@ git checkout -b branch_name         # 创建方法二，创建后会自动切换
 git branch -m '<old>' '<new>'       # 移动分支 old 为 new
 git branch -m '<new>'               # 将当前分支移动为 New
 git branch -M '<old>' '<new>'       # 等价与 git branch --move --force
+git branch -vv                      # 查看分支详细信息，包括跟踪的上游分支
 
 # 删除已经 Merge 的所有分支
 git branch --merged master | grep -v '^\*\|  master' | xargs -n 1 git branch -d
