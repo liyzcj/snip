@@ -47,7 +47,8 @@ printf "重置隐藏      \\\e[28m\n"
 
 # 打印特殊格式（如颜色）是终端提供的功能，现在常用的终端是 xterm-256color，顾名思义支持 256 种颜色。
 # 要想让终端打印带有颜色字符串，需要使用 "<Esc>[ + FormatCode + m" 代码来开启或重置颜色输入。
-# 其中 <Esc> 在 Bash 中可以由三种转义字符表示：\e | \033 | \x1B
+# 其中 <Esc> 在 Bash 中可以由三种转义字符表示：\e | \033 | \x1B; 其中 \e 在 MacOS 中无效
+# https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
 
 # ================================= 16 Colors ================================ #
 
